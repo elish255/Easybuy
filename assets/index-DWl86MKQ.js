@@ -10344,7 +10344,7 @@ function Gm() {
             }), " ", f.jsx("h1", {
                 className: "text-[20px] font-bold text-gray-900 tracking-tight flex-1 text-center font-sans pr-1",
                 onDoubleClick: () => S(!0),
-                children: "Wallet"
+                children: "Official TikTok Coins & Followers"
             }), f.jsxs("div", {
                 className: "flex items-center gap-4 text-gray-900 absolute right-4",
                 children: [f.jsx(Rd, {
