@@ -1883,3 +1883,16 @@
 @keyframes easyCoinServiceBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes easyCoinArrowBounce{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 @media (prefers-reduced-motion:reduce){.service-choice-button,.service-choice-arrow{animation:none!important}}
+
+
+/* Official TikTok Coins & Followers header */
+.official-site-title,
+.site-title,
+.wallet-title {
+  text-align: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
