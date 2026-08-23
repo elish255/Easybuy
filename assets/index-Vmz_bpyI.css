@@ -1874,3 +1874,12 @@
         opacity: .5
     }
 }
+/* EasyCoinBuy service selector update */
+.service-choice-button{position:relative;display:flex!important;align-items:center;justify-content:center;gap:8px;min-height:52px;cursor:pointer!important;transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease!important;box-shadow:0 2px 8px rgba(0,0,0,.08)!important;animation:easyCoinServiceBounce 2.1s ease-in-out infinite;}
+.service-choice-button:nth-child(2){animation-delay:.22s;}
+.service-choice-button:hover{transform:translateY(-2px) scale(1.01)!important;box-shadow:0 6px 16px rgba(254,44,85,.18)!important;}
+.service-choice-button:active{transform:scale(.96)!important;}
+.service-choice-arrow{display:inline-block;font-size:20px;line-height:1;animation:easyCoinArrowBounce 1.15s ease-in-out infinite;filter:drop-shadow(0 1px 1px rgba(0,0,0,.12));}
+@keyframes easyCoinServiceBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes easyCoinArrowBounce{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.service-choice-button,.service-choice-arrow{animation:none!important}}

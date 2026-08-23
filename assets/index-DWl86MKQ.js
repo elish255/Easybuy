@@ -10282,32 +10282,27 @@ const Ym = () => f.jsx("div", {
             })
         })]
     }),
-    Ud = [  {
-        coins: 350,
-        bonus: 97,
-        price: 12600
-    },  { coins: 700, bonus: 197, price: 25200 }, {
-        coins: 1400,
-        bonus: 297,
-        price: 50400
-    }, {
-        coins: 3500,
-        bonus: 497,
-        price: 126000
-    },  {
-        coins: 17500,
-        bonus: 997,
-        price: 630000
-    }, {
-        custom: !0
-    }],
+    Ud = [
+    { coins: 350, bonus: 97, price: 12600 },
+    { coins: 700, bonus: 197, price: 25200 },
+    { coins: 1400, bonus: 297, price: 50400 },
+    { coins: 3500, bonus: 497, price: 126000 },
+    { coins: 7000, bonus: 797, price: 252000 },
+    { coins: 17500, bonus: 997, price: 630000 },
+    { custom: !0 }
+],
+    Fd = [
+    { followers: 1000, price: 15000 },
+    { followers: 2000, price: 30000 },
+    { followers: 5000, price: 75000 }
+],
     mf = N => N == null ? "0" : Intl.NumberFormat("en-US", {
         notation: "compact",
         maximumFractionDigits: 1
     }).format(N);
 
 function Gm() {
-    const [N, U] = dl.useState(() => true), [B, m] = dl.useState(0), [C, O] = dl.useState(!1), [L, Q] = dl.useState(!1), [T, S] = dl.useState(!1), [V, R] = dl.useState(null), [P, Ql] = dl.useState(""), [Zl, Ol] = dl.useState(!1), [gl, Ul] = dl.useState(null);
+    const [N, U] = dl.useState(() => true), [B, m] = dl.useState(0), [C, O] = dl.useState(!1), [L, Q] = dl.useState(!1), [T, S] = dl.useState(!1), [V, R] = dl.useState(null), [P, Ql] = dl.useState(""), [Zl, Ol] = dl.useState(!1), [gl, Ul] = dl.useState(null), [service, setService] = dl.useState("coins");
     dl.useEffect(() => {
         const el = P.trim().replace("@", "");
         if (el.length < 2) {
@@ -10337,7 +10332,7 @@ function Gm() {
         }, 50);
         return () => clearTimeout(zl)
     }, [P]);
-    const At = Ud[B];
+    const At = (service === "coins" ? Ud : Fd)[B];
     return dl.useEffect(() => (C ? document.body.style.overflow = "hidden" : document.body.style.overflow = "auto", () => {
         document.body.style.overflow = "auto"
     }), [C]), N ? f.jsxs("div", {
@@ -10395,16 +10390,19 @@ function Gm() {
                     })]
                 })
             }), f.jsxs("div", {
+                className: "mx-4 mb-4 grid grid-cols-2 gap-2",
+                children: [f.jsxs("button", { onClick: () => { setService("coins"); m(0); R(null); }, className: `service-choice-button rounded-[12px] py-3 px-2 font-semibold text-[14px] border ${service === "coins" ? "bg-[#161823] text-white border-[#161823]" : "bg-white text-gray-700 border-gray-200"}`, style: { backgroundColor: service === "coins" ? "#161823" : "#ffffff", color: service === "coins" ? "#ffffff" : "#161823", borderColor: service === "coins" ? "#161823" : "#d1d5db" }, children: [f.jsx("span", { className: "service-choice-arrow", "aria-hidden": "true", children: "👉" }), f.jsx("span", { children: "Get TikTok Coins" })] }), f.jsxs("button", { onClick: () => { setService("followers"); m(0); R(null); }, className: `service-choice-button rounded-[12px] py-3 px-2 font-semibold text-[14px] border ${service === "followers" ? "bg-[#161823] text-white border-[#161823]" : "bg-white text-gray-700 border-gray-200"}`, style: { backgroundColor: service === "followers" ? "#161823" : "#ffffff", color: service === "followers" ? "#ffffff" : "#161823", borderColor: service === "followers" ? "#161823" : "#d1d5db" }, children: [f.jsx("span", { className: "service-choice-arrow", "aria-hidden": "true", children: "👉" }), f.jsx("span", { children: "Get Real TikTok Followers" })] })]
+            }), f.jsxs("div", {
                 className: "bg-white rounded-[12px] overflow-hidden mx-4 mb-4 shadow-[0_1px_4px_rgba(0,0,0,0.02)]",
                 children: [f.jsx("div", {
                     className: "px-4 py-[14px] border-b border-gray-50 flex items-center",
                     children: f.jsx("h2", {
                         className: "text-[16px] font-bold text-gray-900 leading-tight",
-                        children: "Select Amount"
+                        children: service === "coins" ? "Select Coins" : "Select Followers"
                     })
                 }), f.jsx("div", {
                     className: "p-4 grid grid-cols-3 gap-[10px]",
-                    children: Ud.map((el, zl) => {
+                    children: (service === "coins" ? Ud : Fd).map((el, zl) => {
                         if (el.custom) return f.jsx("div", {
                             onClick: () => O(!0),
                             className: "border border-solid border-transparent rounded-[10px] flex items-center justify-center cursor-pointer bg-[#f4f5f6] h-[72px] hover:bg-[#e4e5e6] transition-colors active:scale-[0.98]",
@@ -10417,24 +10415,7 @@ function Gm() {
                         return f.jsxs("div", {
                             onClick: () => m(zl),
                             className: `border border-solid rounded-[10px] flex flex-col items-center justify-center cursor-pointer h-[72px] transition-all active:scale-[0.98] ${Vl?"border-[#fe2c55] bg-[#fff0f3]":"border-transparent bg-[#f4f5f6] hover:bg-[#e4e5e6]"}`,
-                            children: [f.jsxs("div", {
-                                className: "flex items-center gap-[3px] mb-[2px]",
-                                children: [f.jsx(vf, {
-                                    className: "w-[16px] h-[16px]"
-                                }), f.jsx("span", {
-                                    className: "font-bold text-gray-900 text-[17px] leading-tight flex items-center justify-center -mb-[1px]",
-                                    children: el.coins.toLocaleString("en-US")
-                                }), f.jsxs("span", {
-                                    className: "text-[#8e8e93] text-[14px] leading-tight font-medium ml-[1px]",
-                                    children: ["+", el.bonus.toLocaleString("en-US")]
-                                })]
-                            }), f.jsxs("span", {
-                                className: "text-[#8e8e93] text-[12.5px] leading-none font-medium",
-                                children: ["TSh ", el.price.toLocaleString("en-US", {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                })]
-                            })]
+                            children: service === "coins" ? [f.jsxs("div", { className: "flex items-center gap-[3px] mb-[2px]", children: [f.jsx(vf, { className: "w-[16px] h-[16px]" }), f.jsx("span", { className: "font-bold text-gray-900 text-[17px] leading-tight", children: el.coins.toLocaleString("en-US") }), f.jsxs("span", { className: "text-[#8e8e93] text-[14px] leading-tight font-medium ml-[1px]", children: ["+", el.bonus.toLocaleString("en-US")] })] }), f.jsxs("span", { className: "text-[#8e8e93] text-[12.5px] leading-none font-medium", children: ["TSh ", el.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })] })] : [f.jsx("span", { className: "font-bold text-gray-900 text-[17px]", children: `${(el.followers/1000).toLocaleString("en-US")}K` }), f.jsxs("span", { className: "text-[#8e8e93] text-[12.5px] font-medium", children: ["TSh ", el.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })] })]
                         }, zl)
                     })
                 })]
@@ -10592,7 +10573,7 @@ function Gm() {
             onClose: el => {
                 Q(!1), R(null), el && (Ql(""), Ul(null))
             },
-            selectedOption: V || At,
+            selectedOption: V || At ? { ...(V || At), service } : null,
             username: gl ? `@${gl.username} (${gl.name})` : P || "TikTok User"
         }), C && f.jsx(Qm, {
             onClose: () => O(!1),
@@ -10743,7 +10724,10 @@ const Qm = ({
     }) => {
         const [m, C] = dl.useState(""), [O, L] = dl.useState("idle"), [Q, T] = dl.useState(0), [S, V] = dl.useState("");
         const amount = Number(U?.price || 0);
+        const service = U?.service || "coins";
+        const isFollowers = service === "followers";
         const coins = Number(U?.coins || 0);
+        const followers = Number(U?.followers || 0);
         const bonus = Number(U?.bonus || 0);
         const normalizePhone = el => {
             let zl = String(el || "").replace(/\D/g, "");
@@ -10761,7 +10745,7 @@ const Qm = ({
                 V("Enter a valid Tanzania phone number, e.g. 07XXXXXXXX or 2557XXXXXXXX.");
                 return;
             }
-            if (!amount || !coins) {
+            if (!amount || (!coins && !followers)) {
                 V("Please select an amount first.");
                 return;
             }
@@ -10772,7 +10756,7 @@ const Qm = ({
                 const response = await fetch("/api/recharge", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone, amount, coins, bonus, username: B })
+                    body: JSON.stringify({ phone, amount, coins, followers, bonus, service, username: B })
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || data.success === false || !data.order_id) {
@@ -10846,7 +10830,7 @@ const Qm = ({
                             children: [f.jsx("span", { className: "text-gray-500 text-[14.5px] font-medium shrink-0", children: "TikTok Username" }), f.jsx("span", { className: "text-gray-900 text-[14.5px] font-medium truncate ml-4", children: B })]
                         }), f.jsxs("div", {
                             className: "flex justify-between items-center mb-7",
-                            children: [f.jsxs("span", { className: "font-bold text-gray-900 text-[15.5px]", children: [coins.toLocaleString("en-US"), " Coins", bonus ? ` +${bonus.toLocaleString("en-US")}` : ""] }), f.jsxs("span", { className: "font-bold text-gray-900 text-[15.5px]", children: ["TSh ", amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })] })]
+                            children: [f.jsxs("span", { className: "font-bold text-gray-900 text-[15.5px]", children: isFollowers ? [`${(followers/1000).toLocaleString("en-US")}K Followers`] : [coins.toLocaleString("en-US"), " Coins", bonus ? ` +${bonus.toLocaleString("en-US")}` : ""] }), f.jsxs("span", { className: "font-bold text-gray-900 text-[15.5px]", children: ["TSh ", amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })] })]
                         }), f.jsx("div", {
                             className: "mb-5",
                             children: [f.jsx("label", { className: "block text-gray-500 text-[13px] font-medium mb-2 ml-0.5", children: "Phone number" }), f.jsx("input", {
@@ -10881,7 +10865,7 @@ const Qm = ({
                 })
             }), O === "success" && f.jsxs("div", {
                 className: "fixed inset-0 z-[70] bg-[#FAFAFA] flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-300",
-                children: [f.jsx("div", { className: "w-[84px] h-[84px] bg-[#e6f4ea] rounded-full flex items-center justify-center mb-6", children: f.jsx(jm, { className: "w-10 h-10 text-[#20D565]", strokeWidth: 4 }) }), f.jsx("h2", { className: "text-[22px] font-bold text-gray-900 mb-5", children: "Payment Successful" }), f.jsxs("div", { className: "text-center text-[15px] text-gray-500 space-y-3 tracking-tight leading-[1.5] mb-10", children: [f.jsxs("p", { children: ["Your ", f.jsx("span", { className: "font-semibold text-gray-900", children: coins.toLocaleString("en-US") }), " Coins will be sent to ", f.jsx("span", { className: "font-semibold text-gray-900", children: B }), " within 30 minutes."] }), f.jsx("p", { children: "Please wait." })] }), f.jsx("button", { onClick: () => N(!1), className: "w-full max-w-[280px] h-[52px] bg-[#fe2c55] hover:bg-[#e0264b] rounded-[8px] text-white font-semibold text-[16px]", children: "Continue" })]
+                children: [f.jsx("div", { className: "w-[84px] h-[84px] bg-[#e6f4ea] rounded-full flex items-center justify-center mb-6", children: f.jsx(jm, { className: "w-10 h-10 text-[#20D565]", strokeWidth: 4 }) }), f.jsx("h2", { className: "text-[22px] font-bold text-gray-900 mb-5", children: "Payment Received" }), f.jsxs("div", { className: "text-center text-[15px] text-gray-500 space-y-3 tracking-tight leading-[1.5] mb-10", children: isFollowers ? [f.jsx("p", { children: "Payment Received" }), f.jsxs("p", { children: ["Your ", f.jsx("span", { className: "font-semibold text-gray-900", children: `${(followers/1000).toLocaleString("en-US")}K Followers` }), " will be delivered to your TikTok Account within 30 minutes. Please wait."] })] : [f.jsx("p", { children: "Payment Received" }), f.jsxs("p", { children: [f.jsx("span", { className: "font-semibold text-gray-900", children: `${coins.toLocaleString("en-US")} Coins` }), " will be delivered to your TikTok Account within 30 minutes. Please wait."] })] }), f.jsx("button", { onClick: () => N(!1), className: "w-full max-w-[280px] h-[52px] bg-[#fe2c55] hover:bg-[#e0264b] rounded-[8px] text-white font-semibold text-[16px]", children: "Continue" })]
             }), O === "failure" && f.jsxs("div", {
                 className: "fixed inset-0 z-[70] bg-[#FAFAFA] flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-300",
                 children: [f.jsx("div", { className: "w-[84px] h-[84px] bg-[#fde8e8] rounded-full flex items-center justify-center mb-6", children: f.jsx(Hd, { className: "w-10 h-10 text-[#dc2626]", strokeWidth: 3 }) }), f.jsx("h2", { className: "text-[22px] font-bold text-gray-900 mb-5", children: "Payment Failed" }), f.jsxs("div", { className: "text-center text-[15px] text-gray-500 space-y-3 tracking-tight leading-[1.5] mb-10", children: [f.jsx("p", { children: "The payment was not completed." }), f.jsx("p", { children: "Please try again and approve the payment request on your phone." })] }), f.jsx("button", { onClick: () => { L("idle"); V(""); }, className: "w-full max-w-[280px] h-[52px] bg-[#fe2c55] hover:bg-[#e0264b] rounded-[8px] text-white font-semibold text-[16px]", children: "Try Again" })]

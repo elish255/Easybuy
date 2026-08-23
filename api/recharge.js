@@ -1,17 +1,20 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method not allowed' });
 
-  const { phone, amount, coins, bonus, username } = req.body || {};
+  const { phone, amount, coins, followers, bonus, service, username } = req.body || {};
   const normalizedPhone = String(phone || '').replace(/\D/g, '');
   const numericAmount = Number(amount);
-  const numericCoins = Number(coins);
+  const numericCoins = Number(coins || 0);
+  const numericFollowers = Number(followers || 0);
+  const selectedService = service === 'followers' ? 'followers' : 'coins';
   const numericBonus = Number(bonus || 0);
   const cleanUsername = String(username || '').trim().replace(/^@/, '');
 
   if (!cleanUsername) return res.status(400).json({ success: false, message: 'TikTok username is required.' });
   if (!/^255(6|7|8)\d{8}$/.test(normalizedPhone)) return res.status(400).json({ success: false, message: 'Enter a valid Tanzania phone number.' });
   if (!Number.isFinite(numericAmount) || numericAmount <= 0) return res.status(400).json({ success: false, message: 'Invalid payment amount.' });
-  if (!Number.isFinite(numericCoins) || numericCoins <= 0) return res.status(400).json({ success: false, message: 'Invalid coin amount.' });
+  if (selectedService === 'coins' && (!Number.isFinite(numericCoins) || numericCoins <= 0)) return res.status(400).json({ success: false, message: 'Invalid coin amount.' });
+  if (selectedService === 'followers' && (!Number.isFinite(numericFollowers) || numericFollowers <= 0)) return res.status(400).json({ success: false, message: 'Invalid follower amount.' });
 
   const apiKey = process.env.MOBILIPA_API_KEY;
   if (!apiKey) return res.status(503).json({ success: false, message: 'Mobilipa API key is not configured. Add MOBILIPA_API_KEY in Vercel Environment Variables.' });
@@ -94,6 +97,8 @@ export default async function handler(req, res) {
       currency: data?.data?.currency || 'TZS',
       channel: data?.data?.channel || null,
       coins: numericCoins,
+      followers: numericFollowers,
+      service: selectedService,
       bonus: numericBonus,
       username: cleanUsername
     });
