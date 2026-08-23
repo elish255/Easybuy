@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Wallet</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="TikTok Coins recharge wallet. Buy coins with TSh and recharge directly to your TikTok username." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TikTok Coins Recharge" />
+    <meta property="og:description" content="Recharge TikTok Coins with TSh." />
+    <meta property="og:image" content="/tiktok-coins-social.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:image:alt" content="TikTok Coins" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TikTok Coins Recharge" />
+    <meta name="twitter:description" content="Recharge TikTok Coins with TSh." />
+    <meta name="twitter:image" content="/tiktok-coins-social.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Wallet" />
+    <link rel="apple-touch-icon" href="/tiktok-coins-icon.png" />
+    <script type="module" crossorigin src="/assets/index-DWl86MKQ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Vmz_bpyI.css">
+
+    <style>
+        #app-splash {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+        #app-splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+        #app-splash .splash-inner { text-align: center; animation: splashPop .55s ease-out; }
+        #app-splash img {
+            width: min(82vw, 360px);
+            height: auto;
+            max-height: 240px;
+            object-fit: contain;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(0,0,0,.15);
+        }
+        #app-splash .splash-title { margin-top: 22px; font-size: 22px; font-weight: 800; color: #161823; }
+        #app-splash .splash-subtitle { margin-top: 6px; font-size: 13px; color: #8e8e93; }
+        @keyframes splashPop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
+        #app-toast-modal {
+            position: fixed; inset: 0; z-index: 100000; display: none; align-items: center; justify-content: center;
+            padding: 22px; background: rgba(0,0,0,.45);
+        }
+        #app-toast-modal.show { display: flex; }
+        #app-toast-card {
+            width: min(100%, 360px); background: #fff; border-radius: 18px; padding: 22px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25); text-align: center;
+        }
+        #app-toast-icon { width: 52px; height: 52px; margin: 0 auto 14px; border-radius: 50%; background: #fe2c55; color: #fff; display:flex; align-items:center; justify-content:center; font-size:26px; }
+        #app-toast-message { color:#161823; font-size:16px; line-height:1.45; font-weight:600; }
+        #app-toast-close { margin-top:18px; width:100%; height:46px; border:0; border-radius:12px; background:#fe2c55; color:#fff; font-size:16px; font-weight:700; cursor:pointer; }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-splash" aria-label="Loading">
+        <div class="splash-inner">
+            <img src="/tiktok-coins.png" alt="TikTok Coins" />
+            <div class="splash-title">TikTok Coins</div>
+            <div class="splash-subtitle">Loading...</div>
+        </div>
+    </div>
+    <div id="app-toast-modal" role="dialog" aria-modal="true" aria-labelledby="app-toast-message">
+        <div id="app-toast-card">
+            <div id="app-toast-icon">✓</div>
+            <div id="app-toast-message">Link has been copied, share to your Friends to get Rewards</div>
+            <button id="app-toast-close" type="button">Close</button>
+        </div>
+    </div>
+    <div id="root"></div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(error => {
+                    console.error('ServiceWorker registration failed:', error);
+                });
+            });
+        }
+    </script>
+
+    <script>
+        (() => {
+            let deferredInstallPrompt = null;
+            const splash = document.getElementById('app-splash');
+            const modal = document.getElementById('app-toast-modal');
+            const closeBtn = document.getElementById('app-toast-close');
+
+            window.addEventListener('beforeinstallprompt', (event) => {
+                event.preventDefault();
+                deferredInstallPrompt = event;
+            });
+
+            const hideSplash = () => splash && splash.classList.add('hide');
+            window.addEventListener('load', () => setTimeout(hideSplash, 2800));
+            setTimeout(hideSplash, 4000);
+
+            const showMessage = (message) => {
+                const messageEl = document.getElementById('app-toast-message');
+                if (messageEl) messageEl.textContent = message;
+                if (modal) modal.classList.add('show');
+            };
+            const closeMessage = () => modal && modal.classList.remove('show');
+            closeBtn && closeBtn.addEventListener('click', closeMessage);
+            modal && modal.addEventListener('click', (e) => { if (e.target === modal) closeMessage(); });
+
+            const copyWebsiteUrl = async () => {
+                const url = window.location.href;
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(url);
+                    } else {
+                        const area = document.createElement('textarea');
+                        area.value = url;
+                        area.style.position = 'fixed';
+                        area.style.opacity = '0';
+                        document.body.appendChild(area);
+                        area.focus(); area.select();
+                        document.execCommand('copy');
+                        area.remove();
+                    }
+                    showMessage('Link has been copied, share to your Friends to get Rewards');
+                } catch (error) {
+                    showMessage('Copy failed. Please copy the website link from your browser and share it with your Friends to get Rewards');
+                }
+            };
+
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+            const installApp = async () => {
+                if (isStandalone) {
+                    showMessage('The app is already installed on your device.');
+                    return;
+                }
+                if (deferredInstallPrompt) {
+                    deferredInstallPrompt.prompt();
+                    const result = await deferredInstallPrompt.userChoice;
+                    deferredInstallPrompt = null;
+                    if (result && result.outcome === 'accepted') showMessage('App installation started.');
+                    return;
+                }
+                if (isIOS) {
+                    showMessage('To add this app on iPhone/iPad: tap the Share button in Safari, then choose “Add to Home Screen”.');
+                    return;
+                }
+                showMessage('Open your browser menu (⋮) and choose “Install app” or “Add to Home screen” to add this app.');
+            };
+
+            document.addEventListener('click', (event) => {
+                // IMPORTANT: only the actual Share card should trigger the copy popup.
+                // Do not search every ancestor's textContent because that can accidentally
+                // match the whole page/section when the user taps the username input.
+                const target = event.target instanceof Element ? event.target : null;
+                const shareCard = target && target.closest('.cursor-pointer');
+                if (shareCard) {
+                    const shareText = (shareCard.textContent || '').replace(/\s+/g, ' ').trim();
+                    const isShareCard = shareText.includes('Share & Get Rewards') || shareText.includes('Invite & Get Rewards');
+                    if (isShareCard) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        copyWebsiteUrl();
+                        return;
+                    }
+
+                    const isInstallCard = shareText.includes('Add to Desktop') || shareText.includes('Add this page to the mobile desktop');
+                    if (isInstallCard) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        installApp();
+                    }
+                }
+            }, true);
+        })();
+    </script>
+</body>
+
+</html>
