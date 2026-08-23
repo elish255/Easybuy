@@ -10286,7 +10286,7 @@ const Ym = () => f.jsx("div", {
         coins: 350,
         bonus: 97,
         price: 12600
-    },  { coins: 700, bonus: 197, price: 25200 }, { {
+    },  { coins: 700, bonus: 197, price: 25200 }, {
         coins: 1400,
         bonus: 297,
         price: 50400
