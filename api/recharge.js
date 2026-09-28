@@ -16,49 +16,50 @@ export default async function handler(req, res) {
   if (selectedService === 'coins' && (!Number.isFinite(numericCoins) || numericCoins <= 0)) return res.status(400).json({ success: false, message: 'Invalid coin amount.' });
   if (selectedService === 'followers' && (!Number.isFinite(numericFollowers) || numericFollowers <= 0)) return res.status(400).json({ success: false, message: 'Invalid follower amount.' });
 
-  const apiKey = process.env.MOBILIPA_API_KEY;
-  if (!apiKey) return res.status(503).json({ success: false, message: 'Mobilipa API key is not configured. Add MOBILIPA_API_KEY in Vercel Environment Variables.' });
+  const apiKey = process.env.FIMIPAY_API_KEY;
+  const createUrl = process.env.FIMIPAY_CREATE_PAYMENT_URL || 'https://fimipay.com/api/v1/payment/create_order';
+  if (!apiKey) return res.status(503).json({ success: false, message: 'Payment service is not configured. Please contact support.' });
 
   const maskPhone = value => {
     const p = String(value || '');
     return p.length > 4 ? `${p.slice(0, 3)}******${p.slice(-2)}` : '***';
   };
-  const sanitize = value => {
-    try {
-      const clone = JSON.parse(JSON.stringify(value));
-      const hide = obj => {
-        if (!obj || typeof obj !== 'object') return;
-        for (const key of Object.keys(obj)) {
-          const lower = key.toLowerCase();
-          if (['msisdn', 'buyer_phone', 'phone', 'mobile', 'email', 'buyer_email'].includes(lower)) {
-            obj[key] = lower === 'email' || lower === 'buyer_email' ? '[redacted]' : maskPhone(obj[key]);
-          } else if (typeof obj[key] === 'object') hide(obj[key]);
-        }
-      };
-      hide(clone);
-      return clone;
-    } catch { return { raw: String(value) }; }
+
+  const firstString = (...values) => {
+    for (const value of values) {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+      if (typeof value === 'number') return String(value);
+    }
+    return undefined;
+  };
+
+  const dataObject = payload => payload && typeof payload.data === 'object' && !Array.isArray(payload.data) ? payload.data : {};
+  const extractOrderId = payload => {
+    const data = dataObject(payload);
+    return firstString(payload.order_id, payload.orderId, data.order_id, data.orderId, data.reference, data.transaction_id);
+  };
+  const extractStatus = payload => {
+    const data = dataObject(payload);
+    return firstString(data.payment_status, data.order_status, data.status, payload.payment_status, payload.order_status, payload.status)?.toLowerCase();
   };
 
   try {
     const requestPayload = {
-      buyer_email: process.env.MOBILIPA_BUYER_EMAIL || 'customer@example.com',
+      buyer_email: process.env.FIMIPAY_BUYER_EMAIL || 'customer@example.com',
       buyer_name: cleanUsername,
       buyer_phone: normalizedPhone,
       amount: Math.round(numericAmount),
-      currency: 'TZS'
+      currency: process.env.FIMIPAY_CURRENCY || 'TZS',
+      payment_method: 'mobile'
     };
 
-    console.log('[Mobilipa create_order] Sending request', {
-      amount: requestPayload.amount,
-      currency: requestPayload.currency,
-      buyer_name: cleanUsername,
-      buyer_phone: maskPhone(normalizedPhone)
-    });
-
-    const upstream = await fetch('https://api.mobilipa.store/v1/payment/create_order', {
+    const upstream = await fetch(createUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
       body: JSON.stringify(requestPayload)
     });
 
@@ -66,36 +67,24 @@ export default async function handler(req, res) {
     let data;
     try { data = JSON.parse(text); } catch { data = { raw: text }; }
 
-    console.log('[Mobilipa create_order] HTTP status:', upstream.status);
-    console.log('[Mobilipa create_order] Response:', JSON.stringify(sanitize(data)));
-    console.log('[Mobilipa create_order] Provider message:', data?.message || null);
-
-    if (!upstream.ok || data?.status !== 'success') {
-      return res.status(502).json({ success: false, message: data?.message || 'Mobilipa rejected the payment request.', provider: data });
+    if (!upstream.ok || String(data?.status || '').toLowerCase() !== 'success') {
+      return res.status(502).json({ success: false, message: data?.message || 'Unable to start payment. Please try again.' });
     }
 
-    const providerStatus = String(data?.data?.payment_status || data?.data?.status || 'PENDING').toUpperCase();
-    const orderId = data?.data?.order_id || null;
+    const providerData = dataObject(data);
+    const orderId = extractOrderId(data);
+    if (!orderId) return res.status(502).json({ success: false, message: 'Payment request was created without an order reference.' });
 
-    console.log('[Mobilipa create_order] Order created:', {
-      order_id: orderId,
-      reference: data?.data?.reference || null,
-      payment_status: providerStatus,
-      amount: data?.data?.amount ?? numericAmount,
-      currency: data?.data?.currency || 'TZS',
-      channel: data?.data?.channel || null,
-      msisdn: maskPhone(data?.data?.msisdn || normalizedPhone)
-    });
-
+    const paymentStatus = extractStatus(data) || 'pending';
     return res.status(200).json({
       success: true,
-      message: data.message || 'Payment request sent to your phone.',
+      message: 'Payment request sent to your phone. Please approve it.',
       order_id: orderId,
-      reference: data?.data?.reference || null,
-      payment_status: providerStatus,
-      amount: data?.data?.amount ?? numericAmount,
-      currency: data?.data?.currency || 'TZS',
-      channel: data?.data?.channel || null,
+      reference: firstString(data.reference, providerData.reference),
+      payment_status: paymentStatus,
+      amount: providerData.amount ?? numericAmount,
+      currency: providerData.currency || requestPayload.currency,
+      channel: providerData.channel || null,
       coins: numericCoins,
       followers: numericFollowers,
       service: selectedService,
@@ -103,7 +92,7 @@ export default async function handler(req, res) {
       username: cleanUsername
     });
   } catch (error) {
-    console.error('[Mobilipa create_order] Network/server error:', error?.stack || error);
-    return res.status(500).json({ success: false, message: 'Could not reach Mobilipa. Please try again.' });
+    console.error('[payment create] Server error:', error?.stack || error);
+    return res.status(500).json({ success: false, message: 'Unable to start payment. Please try again.' });
   }
 }
