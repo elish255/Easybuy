@@ -10763,7 +10763,7 @@ const Qm = ({
                     throw new Error(data.message || "Unable to create the payment request. Please try again.");
                 }
 
-                // Do NOT show success just because Mobilipa created an order.
+                // Do NOT show success just because payment provider created an order.
                 // Success is shown only after order_status reports COMPLETED.
                 const orderId = data.order_id;
                 let attempts = 0;
@@ -10779,7 +10779,7 @@ const Qm = ({
                         const statusData = await statusResponse.json().catch(() => ({}));
                         if (statusResponse.ok && statusData.success) {
                             const status = String(statusData.payment_status || "PENDING").toUpperCase();
-                            if (status === "COMPLETED") {
+                            if (["COMPLETED", "SUCCESS", "PAID"].includes(status)) {
                                 completed = true;
                                 L("success");
                                 V("");
